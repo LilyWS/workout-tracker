@@ -6,7 +6,8 @@ mongoose.connect(process.env.MONGODB_URI, {// || "mongodb://localhost/workout", 
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
-});
+  useFindAndModify: false,
+}).catch(err => console.log(err));
 
 router.put('/workouts/:id', (req, res) => {
   console.log(req.body);

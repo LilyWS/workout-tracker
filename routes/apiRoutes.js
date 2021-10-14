@@ -9,18 +9,24 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
 });
 
 router.put('/workouts/:id', (req, res) => {
-  db.Workout.findByIdAndUpdate(req.params.id, {$push : {exercises: req.body}})
+  console.log(req.body);
+  console.log(req.params.id)
+  db.Workout.findByIdAndUpdate(req.params.id, {$push : {exercises: req.body}}, {new: true})
     .then(data => {
+      console.log(data);
       res.json(data);
     })
     .catch(err => {
+      console.log(err)
       res.json(err);
     })
 });
 
 router.post('/workouts', ({ body }, res) => {
-  db.Workout.create(body)
+  console.log("nice!")
+  db.Workout.create({})
     .then(data => {
+      console.log(data)
       res.json(data);
     })
     .catch(err => {
@@ -29,7 +35,14 @@ router.post('/workouts', ({ body }, res) => {
 });
 
 router.get('/workouts', (req, res) => {
-  db.Workout.find({})
+  db.Workout.aggregate([
+    {
+        $addFields: {
+            totalDuration:
+                { $sum: '$exercises.duration' }
+        },
+    }
+  ])
     .then(workouts => {
       res.json(workouts);
     })
@@ -39,9 +52,16 @@ router.get('/workouts', (req, res) => {
 });
 
 router.get('/workouts/range', (req, res) => {
-  db.Workout.find({})
+  db.Workout.aggregate([
+    {
+        $addFields: {
+            totalDuration:
+                { $sum: '$exercises.duration' }
+        },
+    }
+  ])
     .then(workouts => {
-      res.json(workouts);
+      res.json(workouts.slice(-7));
     })
     .catch(err => {
       res.json(err);

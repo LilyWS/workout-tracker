@@ -30,6 +30,7 @@ router.post('/workouts', ({ body }, res) => {
       res.json(data);
     })
     .catch(err => {
+      console.log(err);
       res.json(err);
     })
 });
